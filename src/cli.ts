@@ -2,21 +2,12 @@ import envPaths from "env-paths";
 import installPath from "./utils/install-path";
 import asar from "asar";
 import devBypass from "utils/dev-bypass";
+import { asarBackupNow } from "utils/backup";
 
 declare const SRC_DEEZIFY: string;
 declare const FINAL_NAME: string;
 
 const paths = envPaths("Deezify", { suffix: "" });
-
-async function asarBackupNow() {
-	const asarPath = await installPath();
-	asar.statFile
-	const latestAsar = await Bun.file(asarPath).arrayBuffer();
-	const date = new Date();
-	const timestamp = `${date.getFullYear().toString().slice(2)}${(date.getMonth() + 1).toString().padStart(2, "0")}.${date.getDate().toString().padStart(2, "0")}.${date.getHours().toString().padStart(2, "0")}${date.getMinutes().toString().padStart(2, "0")}`;
-	Bun.write(`${paths.data}\\${timestamp}\\app.asar`, latestAsar);
-	console.log(`✅ Backup créé dans ${paths.data}\\${timestamp}\\app.asar`);
-}
 
 const htmlPatcher = new HTMLRewriter().on("head", {
 	element(element) {
@@ -35,5 +26,5 @@ async function patchAsarNow() {
 	await asar.createPackage(extractedPath, asarPath);
 	console.log("✅ app.asar patched !");
 }
-
+asarBackupNow();
 patchAsarNow();

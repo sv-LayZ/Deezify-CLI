@@ -1,6 +1,5 @@
 function getPossibleInstallPaths() {
-	if (Bun.env.OS === "Windows_NT")
-		return [`${Bun.env.LOCALAPPDATA}\\Programs\\deezer-desktop`];
+	if (Bun.env.OS === "Windows_NT") return [`${Bun.env.LOCALAPPDATA}\\Programs\\deezer-desktop`];
 	throw new Error("Not implemented for this OS yet");
 }
 
