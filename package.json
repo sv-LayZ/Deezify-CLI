@@ -5,6 +5,7 @@
 	"workspaces": ["packages/*"],
 	"scripts": {
 		"build": "bun run build.ts",
+		"dev": "bun run dev.ts",
 		"validate": "eslint ./packages --fix"
 	},
 	"devDependencies": {
