@@ -15,7 +15,7 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
-export default defineConfig([globalIgnores(["dist"]), {
+export default defineConfig([globalIgnores(["**/dist/**"]), {
     extends: compat.extends(
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
@@ -33,7 +33,7 @@ export default defineConfig([globalIgnores(["dist"]), {
         sourceType: "module",
 
         parserOptions: {
-            project: "./tsconfig.json",
+            project: ["./packages/*/tsconfig.json"],
         },
     },
 

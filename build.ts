@@ -1,28 +1,35 @@
 import { build } from 'bun';
-import { mkdir, exists } from "node:fs/promises";
 
-if (!await exists('./dist')) {
-  await mkdir('./dist', { recursive: true });
+// 1. Compile le script injecté (browser, minifié) en mémoire
+const injectResult = await build({
+	entrypoints: ['./packages/inject/src/main.ts'],
+	target: 'browser',
+	minify: true,
+});
+
+if (!injectResult.success) {
+	console.error('Inject build failed:', injectResult.logs);
+	process.exit(1);
 }
 
-await build({
-  entrypoints: ['./src/cli.ts'],
-  outdir: './dist',
-  target: 'bun',
-  naming: '[dir]/cli.js',
-  define: {
-    SRC_DEEZIFY: "./deezify.js",
-    FINAL_NAME: "deezify.js",
-  },
-  minify: false,
+const injectContent = await injectResult.outputs[0]!.text();
+
+// 2. Compile le CLI en embarquant le contenu du script injecté
+const cliResult = await build({
+	entrypoints: ['./packages/cli/src/cli.ts'],
+	outdir: './packages/cli/dist',
+	target: 'bun',
+	naming: '[dir]/cli.js',
+	define: {
+		INJECT_CONTENT: JSON.stringify(injectContent),
+		FINAL_NAME: JSON.stringify('deezify.js'),
+	},
+	minify: false,
 });
 
-await build({
-  entrypoints: ['./src/inject/main.ts'],
-  outdir: './dist',
-  target: 'browser',
-  naming: '[dir]/deezify.js',
-  minify: true,
-});
+if (!cliResult.success) {
+	console.error('CLI build failed:', cliResult.logs);
+	process.exit(1);
+}
 
 console.log('✅ Build finished !');

@@ -1,0 +1,17 @@
+{
+	"name": "@deezify/cli",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"patch": "bun run src/cli.ts"
+	},
+	"bin": {
+		"deezify": "./dist/cli.js"
+	},
+	"dependencies": {
+		"asar": "^3.2.0",
+		"env-paths": "^3.0.0",
+		"mri": "^1.2.0",
+		"original-fs": "^1.2.0"
+	}
+}
