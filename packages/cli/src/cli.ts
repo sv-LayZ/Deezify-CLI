@@ -9,11 +9,17 @@ declare const FINAL_NAME: string;
 
 const paths = envPaths("Deezify", { suffix: "" });
 
-const htmlPatcher = new HTMLRewriter().on("head", {
-	element(element) {
-		element.append(`<script src="./${FINAL_NAME}"></script>`, { html: true });
-	},
-});
+const htmlPatcher = new HTMLRewriter()
+	.on("script#deezify", {
+		element(element) {
+			element.remove();
+		},
+	})
+	.on("head", {
+		element(element) {
+			element.append(`<script id="deezify" src="./${FINAL_NAME}"></script>`, { html: true });
+		},
+	});
 
 async function patchAsarNow() {
 	const asarPath = await installPath();

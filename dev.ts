@@ -8,11 +8,17 @@ const DEV_PORT = 3000;
 const FINAL_NAME = "deezify.js";
 const paths = envPaths("Deezify", { suffix: "" });
 
-const htmlPatcher = new HTMLRewriter().on("head", {
-	element(element) {
-		element.append(`<script src="http://localhost:${DEV_PORT}/${FINAL_NAME}"></script>`, { html: true });
-	},
-});
+const htmlPatcher = new HTMLRewriter()
+	.on("script#deezify", {
+		element(element) {
+			element.remove();
+		},
+	})
+	.on("head", {
+		element(element) {
+			element.append(`<script id="deezify" src="http://localhost:${DEV_PORT}/${FINAL_NAME}"></script>`, { html: true });
+		},
+	});
 
 async function devPatch() {
 	const asarPath = await installPath();
