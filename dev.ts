@@ -1,35 +1,8 @@
-import installPath from "./packages/cli/src/utils/install-path";
-import devBypass from "./packages/cli/src/utils/dev-bypass";
-import envPaths from "env-paths";
-import asar from "asar";
+import { patchAsar } from "./packages/cli/src/utils/patch";
 import { watch } from "fs";
 
 const DEV_PORT = 3000;
 const FINAL_NAME = "deezify.js";
-const paths = envPaths("Deezify", { suffix: "" });
-
-const htmlPatcher = new HTMLRewriter()
-	.on("script#deezify", {
-		element(element) {
-			element.remove();
-		},
-	})
-	.on("head", {
-		element(element) {
-			element.append(`<script id="deezify" src="http://localhost:${DEV_PORT}/${FINAL_NAME}"></script>`, { html: true });
-		},
-	});
-
-async function devPatch() {
-	const asarPath = await installPath();
-	const extractedPath = `${paths.temp}\\app.asar`;
-	asar.extractAll(asarPath, extractedPath);
-	const htmlFile = await Bun.file(`${extractedPath}\\build\\index.html`).arrayBuffer();
-	await Bun.write(`${extractedPath}\\build\\index.html`, htmlPatcher.transform(htmlFile));
-	await devBypass(`${extractedPath}\\build`);
-	await asar.createPackage(extractedPath, asarPath);
-	console.log("✅ ASAR patché (mode dev) — script servi depuis localhost:" + DEV_PORT);
-}
 
 async function buildInject() {
 	const result = await Bun.build({
@@ -63,6 +36,6 @@ Bun.serve({
 	},
 });
 
-await devPatch();
+await patchAsar({ scriptSrc: `http://localhost:${DEV_PORT}/${FINAL_NAME}` });
 console.log(`\n🚀 Dev prêt — http://localhost:${DEV_PORT}/${FINAL_NAME}`);
 console.log("📝 Édite packages/inject/src/main.ts puis Ctrl+R dans Deezer\n");
