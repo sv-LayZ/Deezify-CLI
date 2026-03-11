@@ -44,11 +44,11 @@ function loadExtensions(): ExtensionManifest[] {
 			const manifest: ExtensionManifest = JSON.parse(fs.readFileSync(manifestFile, "utf-8"));
 			if (!manifest.enabled) continue;
 			const scriptPath = nodePath.join(extPath, entry.name, manifest.main);
-			const script = document.createElement("script");
-			script.src = `file://${scriptPath.replace(/\\/g, "/")}`;
-			script.dataset.extension = manifest.id;
-			document.head.appendChild(script);
+			const code = fs.readFileSync(scriptPath, "utf-8");
+			const fn = new Function(code);
+			fn();
 			loaded.push(manifest);
+			console.log(`[Deezify] Extension "${manifest.name}" loaded`);
 		} catch (e) {
 			console.error(`[Deezify] Extension "${entry.name}" failed:`, e);
 		}
@@ -72,7 +72,7 @@ const DeezifyAPI = {
 			title: dzPlayer.getSongTitle(),
 			artist: dzPlayer.getArtistName(),
 			album: dzPlayer.getAlbumTitle(),
-			cover: dzPlayer.getCover(),
+			cover: `https://e-cdns-images.dzcdn.net/images/cover/${dzPlayer.getCover()}/500x500.jpg`,
 			duration: dzPlayer.getDuration(),
 		}),
 		getPosition: () => dzPlayer.getPosition(),
