@@ -7,7 +7,8 @@ const FINAL_NAME = "deezify.js";
 async function buildInject() {
 	const result = await Bun.build({
 		entrypoints: ["./packages/inject/src/main.ts"],
-		target: "browser",
+		target: "node",
+		format: "cjs",
 	});
 	if (!result.success) {
 		console.error("[inject] Build échoué:", result.logs);

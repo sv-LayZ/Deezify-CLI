@@ -3,7 +3,8 @@ import { build } from 'bun';
 // 1. Compile le script injecté (browser, minifié) en mémoire
 const injectResult = await build({
 	entrypoints: ['./packages/inject/src/main.ts'],
-	target: 'browser',
+	target: 'node',
+	format: 'cjs',
 	minify: true,
 });
 
