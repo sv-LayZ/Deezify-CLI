@@ -22,6 +22,10 @@ export async function patchAsar(options: { scriptSrc: string; injectContent?: st
 	const extractedPath = `${paths.temp}\\app.asar`;
 	asar.extractAll(asarPath, extractedPath);
 
+	if (process.env.NODE_ENV !== "production") {
+		console.log(`📂 Extracted index.html: ${extractedPath}\\build\\index.html`);
+	}
+
 	const htmlFile = await Bun.file(`${extractedPath}\\build\\index.html`).arrayBuffer();
 	await Bun.write(`${extractedPath}\\build\\index.html`, htmlPatcher.transform(htmlFile));
 
